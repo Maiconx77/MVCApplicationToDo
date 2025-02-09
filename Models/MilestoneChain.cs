@@ -16,8 +16,7 @@ namespace MVCApplicationToDo.Models
         [Required]
         [DisplayName("Descrição do Milestone")] // Título alternativo
         public string Title { get; set; }
-
-        // Propriedade de navegação para a coleção de Milestones
         public ICollection<Milestone> Milestones { get; set; }
+        public ICollection<TaskItem> TaskItems { get; set; }
     }
 }

@@ -14,17 +14,15 @@ namespace MVCApplicationToDo.Models
         // Propriedade de navegação para Task
         public Task Task { get; set; }
 
-        // Chave estrangeira para MilestoneChain
-        public int MilestoneChainId { get; set; }
-
-        // Propriedade de navegação para MilestoneChain
-        public MilestoneChain MilestoneChain { get; set; }
-
         // Chave estrangeira para Milestone
         public int MilestoneId { get; set; }
 
         // Propriedade de navegação para Milestone
         public Milestone Milestone { get; set; }
+
+        // Status de conclusão
+        [Required]
+        public bool IsCompleted { get; set; }
 
         [DisplayName("Data Planejada")]
         public DateTime? PlannedDate { get; set; } // Pode ser nulo
