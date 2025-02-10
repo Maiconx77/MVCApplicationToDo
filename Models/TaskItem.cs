@@ -20,6 +20,11 @@ namespace MVCApplicationToDo.Models
 
         [DisplayName("MS Chain")]
         public MilestoneChain MilestoneChain { get; set; }
+
+        public int ProjectId { get; set; }
+
+        public Projects Projects { get; set; }
+
         public ICollection<Progress> Progresses { get; set; }
     }
 }
