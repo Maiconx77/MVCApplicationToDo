@@ -7,13 +7,14 @@ namespace MVCApplicationToDo.Models
     {
         public int Id { get; set; }
 
-        [Required]
-        [DisplayName("Código")] // Código de projeto
-        [StringLength(10)] // Limite máximo de 10 caracteres
-        public string Code { get; set; }
+        [DisplayName("Código")]
+        [StringLength(10)]
+        public required string Code { get; set; }
 
-        [Required]
-        [DisplayName("Nome do Projeto")] // Título descritivo
-        public string Title { get; set; }
+        [DisplayName("Nome do Projeto")]
+        public required string Title { get; set; }
+
+        public ICollection<TaskItem> TaskItems { get; set; }
+        public ICollection<Progress> Progresses { get; set; }
     }
 }

@@ -18,4 +18,3 @@ namespace MVCApplicationToDo.Data
         public DbSet<Project> Projects { get; set; }
     }
 }
-}
