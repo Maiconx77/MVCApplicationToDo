@@ -45,9 +45,6 @@ namespace MVCApplicationToDo
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
 
-            app.MapControllerRoute(
-                name: "tasks",
-                pattern: "{controller=Tasks}/{action=Index}/{id?}");
 
             app.Run();
         }

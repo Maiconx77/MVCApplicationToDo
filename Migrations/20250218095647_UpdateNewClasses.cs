@@ -122,7 +122,7 @@ namespace MVCApplicationToDo.Migrations
                         column: x => x.ProjectId,
                         principalTable: "Projects",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.NoAction);
                     table.ForeignKey(
                         name: "FK_Progresses_TaskItems_TaskItemId",
                         column: x => x.TaskItemId,
@@ -167,7 +167,7 @@ namespace MVCApplicationToDo.Migrations
                 column: "MilestoneChainId",
                 principalTable: "MilestoneChains",
                 principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
+                onDelete: ReferentialAction.NoAction);
 
             migrationBuilder.AddForeignKey(
                 name: "FK_TaskItems_Projects_ProjectId",

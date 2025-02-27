@@ -23,7 +23,7 @@ namespace MVCApplicationToDo.Models
 
         // Chave estrangeira para MilestoneChain
         public int MilestoneChainId { get; set; }
-        public MilestoneChain MilestoneChain { get; set; }
+        public MilestoneChain? MilestoneChain { get; set; }
 
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel;
 
 namespace MVCApplicationToDo.Models
@@ -14,7 +15,7 @@ namespace MVCApplicationToDo.Models
         [DisplayName("Nome do Projeto")]
         public required string Title { get; set; }
 
-        public ICollection<TaskItem> TaskItems { get; set; }
-        public ICollection<Progress> Progresses { get; set; }
+        public ICollection<TaskItem>? TaskItems { get; set; } 
+        public ICollection<Progress>? Progresses { get; set; } 
     }
 }

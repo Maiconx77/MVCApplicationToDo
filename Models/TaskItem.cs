@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -20,17 +21,17 @@ namespace MVCApplicationToDo.Models
         public int MilestoneChainId { get; set; }
 
         [DisplayName("MS Chain")]
-        public required MilestoneChain MilestoneChain { get; set; }
+        public MilestoneChain? MilestoneChain { get; set; } = null;
 
         // Chave estrangeira para Projeto
-        public int ProjectId { get; set; }
+        public  int ProjectId { get; set; }
 
         [DisplayName("Projeto")]
-        public required Project Project { get; set; }
+        public  Project Project { get; set; }
 
         [DisplayName("Completed")]
         public bool IsCompleted { get; set; }
 
-        public ICollection<Progress> Progresses { get; set; }
+        public ICollection<Progress>? Progresses { get; set; } 
     }
 }
