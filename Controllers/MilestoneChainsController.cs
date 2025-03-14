@@ -46,7 +46,10 @@ namespace MVCApplicationToDo.Controllers
         // GET: MilestoneChains/Create
         public IActionResult Create()
         {
-            return View();
+            var milestone = new Milestone() { Code = "M01", Title = "Milestone 01" };
+            var milestoneChain = new MilestoneChain() { Code = "MC01", Title = "Milestone Chain 01", Milestones = [milestone] };
+            return View(milestoneChain);
+
         }
 
         // POST: MilestoneChains/Create

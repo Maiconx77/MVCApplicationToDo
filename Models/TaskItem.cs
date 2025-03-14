@@ -27,7 +27,7 @@ namespace MVCApplicationToDo.Models
         public  int ProjectId { get; set; }
 
         [DisplayName("Projeto")]
-        public  Project Project { get; set; }
+        public Project? Project { get; set; }
 
         [DisplayName("Completed")]
         public bool IsCompleted { get; set; }
