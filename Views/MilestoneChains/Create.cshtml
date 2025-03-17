@@ -10,7 +10,7 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Create">
+        <form asp-action="Create" method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="Code" class="control-label"></label>
@@ -22,6 +22,44 @@
                 <input asp-for="Title" class="form-control" />
                 <span asp-validation-for="Title" class="text-danger"></span>
             </div>
+
+            <h4>Steps</h4>
+            <table class="table col-md-12">
+                <thead>
+                    <tr>
+                        <th class="col-md-1 text-center">Step</th>
+                        <th class="col-md-6 text-center">Título</th>
+                        <th class="col-md-1 text-center">Progresso</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (int i = 0; i < Model.Milestones.Count; i++)
+                    {
+                        <tr>
+                            <td class="col-md-1">
+                                <div class="form-group">
+                                    <input type="text" name="Milestones[@i].Code" value="@Model.Milestones[i].Code" class="form-control" />
+                                </div>
+                            </td>
+                            <td class="col-md-6">
+                                <div class="form-group">
+                                    <input type="text" name="Milestones[@i].Title" value="@Model.Milestones[i].Title" class="form-control" />
+                                </div>
+                            </td>
+                            <td class="col-md-1">
+                                <div class="form-group">
+                                    <input type="number" name="Milestones[@i].Value" value="@Model.Milestones[i].Value" class="form-control" />
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+            <!-- Botão para adicionar milestones -->
+            <button type="button" id="add-milestone" class="btn btn-primary">Adicionar Milestone</button>
+            <br /><br />
+
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>
@@ -29,44 +67,43 @@
     </div>
 </div>
 
-<h4>Steps</h4>
-
-<table class="table col-md-12">
-    <thead>
-        <tr>
-            <th class="col-md-1 text-center">Step</th>
-            <th class="col-md-6 text-center">Título</th>
-            <th class="col-md-1 text-center">Progresso</th>
-        </tr>
-    </thead>
-    <tbody>
-        @for (int i = 0; i < Model.Milestones.Count; i++)
-        {
-            <tr>
-                <td class="col-md-1">
-                    <div class="form-group">
-                        @Html.EditorFor(model => model.Milestones[i].Code, new { htmlAttributes = new { @class = "form-control" } })
-                    </div>
-                </td>
-                <td class="col-md-6">
-                    <div class="form-group">
-                        @Html.EditorFor(model => model.Milestones[i].Title, new { htmlAttributes = new { @class = "form-control" } })
-                    </div>
-                </td>
-                <td class="col-md-1">
-                    <div class="form-group">
-                        @Html.EditorFor(model => model.Milestones[i].Value, new { htmlAttributes = new { @class = "form-control" } })
-                    </div>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
 
 <div>
     <a asp-action="Index">Back to List</a>
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+        <<script>
+             $(document).ready(function () {
+                 let milestoneIndex = @Model.Milestones.Count; // Índice inicial baseado no número de milestones do modelo
+
+                 $("#add-milestone").click(function () {
+                     let newRow = `
+                         <tr>
+                             <td class="col-md-1">
+                                 <div class="form-group">
+                                     <input type="text" name="Milestones[${milestoneIndex}].Code" class="form-control" />
+                                 </div>
+                             </td>
+                             <td class="col-md-6">
+                                 <div class="form-group">
+                                     <input type="text" name="Milestones[${milestoneIndex}].Title" class="form-control" />
+                                 </div>
+                             </td>
+                             <td class="col-md-1">
+                                 <div class="form-group">
+                                     <input type="number" name="Milestones[${milestoneIndex}].Value" class="form-control" />
+                                 </div>
+                             </td>
+                         </tr>`;
+                     $(".table tbody").append(newRow); // Adiciona a nova linha
+                     milestoneIndex++; // Incrementa o índice
+                 });
+             });
+    </script>
+
 }

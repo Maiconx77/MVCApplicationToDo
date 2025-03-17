@@ -16,6 +16,7 @@ namespace MVCApplicationToDo.Data
         public DbSet<MilestoneChain> MilestoneChains { get; set; }
         public DbSet<Milestone> Milestones { get; set; }
         public DbSet<Project> Projects { get; set; }
+        public DbSet<MilestoneItem> MilestoneItems { get; set; }
 
     }
 }
