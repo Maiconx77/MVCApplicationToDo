@@ -22,6 +22,14 @@ namespace MVCApplicationToDo.Controllers
         // GET: Projects
         public async Task<IActionResult> Index()
         {
+            // Recupera os valores armazenados na sessão
+            var selectedProjectId = HttpContext.Session.GetInt32("SelectedProjectId");
+            var selectedProjectTitle = HttpContext.Session.GetString("SelectedProjectTitle");
+
+            // Passa os valores para o ViewBag
+            ViewBag.SelectedProjectId = selectedProjectId;
+            ViewBag.SelectedProjectTitle = selectedProjectTitle;
+
             return View(await _context.Projects.ToListAsync());
         }
 
@@ -153,5 +161,26 @@ namespace MVCApplicationToDo.Controllers
         {
             return _context.Projects.Any(e => e.Id == id);
         }
+
+        // Nova ação para selecionar um projeto
+        public IActionResult Select(int id)
+        {
+            // Recupera o projeto pelo ID
+            var project = _context.Projects.FirstOrDefault(p => p.Id == id);
+
+            if (project == null)
+            {
+                return NotFound(); // Caso o projeto não exista
+            }
+
+            // Salva o ID e Title na sessão
+            HttpContext.Session.SetInt32("SelectedProjectId", project.Id);
+            HttpContext.Session.SetString("SelectedProjectTitle", project.Title);
+
+            TempData["Message"] = "Projeto selecionado com sucesso!";
+
+            return RedirectToAction("Index");
+        }
+
     }
 }

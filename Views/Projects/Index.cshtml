@@ -6,6 +6,16 @@
 
 <h1>Index</h1>
 
+@if (ViewBag.SelectedProjectId != null && ViewBag.SelectedProjectTitle != null)
+{
+    <div style="margin-bottom: 15px; color: green;">
+        <p>Projeto Selecionado: @ViewBag.SelectedProjectId</p>
+        <p>Título: @ViewBag.SelectedProjectTitle</p>
+    </div>
+}
+
+
+
 <p>
     <a asp-action="Create">Create New</a>
 </p>
@@ -18,7 +28,9 @@
             <th>
                 @Html.DisplayNameFor(model => model.Title)
             </th>
-            <th></th>
+            <th>
+                Ações
+            </th>
         </tr>
     </thead>
     <tbody>
@@ -33,7 +45,8 @@
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
                 <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a> |
+                <a asp-action="Select" asp-route-id="@item.Id">Select</a>
             </td>
         </tr>
 }

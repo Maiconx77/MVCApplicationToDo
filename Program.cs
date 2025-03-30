@@ -16,6 +16,14 @@ namespace MVCApplicationToDo
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+            // Registrar o serviço de sessão
+            builder.Services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromMinutes(30); // Tempo antes da expiração
+                options.Cookie.HttpOnly = true; // Proteção contra acesso via scripts
+                options.Cookie.IsEssential = true; // Obrigatório para funcionar em conformidade com GDPR
+            });
+
             var app = builder.Build();
 
             // Initialize the database
@@ -38,6 +46,9 @@ namespace MVCApplicationToDo
             app.UseStaticFiles();
 
             app.UseRouting();
+
+            // Habilitar sessões
+            app.UseSession();
 
             app.UseAuthorization();
 
