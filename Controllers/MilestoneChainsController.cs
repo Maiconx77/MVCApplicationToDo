@@ -48,6 +48,7 @@ namespace MVCApplicationToDo.Controllers
         {
             var milestone = new Milestone() { Code = "M01", Title = "Milestone 01" };
             var milestoneChain = new MilestoneChain() { Code = "MC01", Title = "Milestone Chain 01", Milestones = [milestone] };
+            ViewBag.MilestoneItems = new SelectList(_context.MilestoneItems, "Id", "Code");
             return View(milestoneChain);
 
         }
@@ -76,7 +77,10 @@ namespace MVCApplicationToDo.Controllers
                 return NotFound();
             }
 
-            var milestoneChain = await _context.MilestoneChains.FindAsync(id);
+            var milestoneChain = await _context.MilestoneChains
+                .Include(m => m.Milestones)
+                .FirstOrDefaultAsync(m => m.Id == id);
+
             if (milestoneChain == null)
             {
                 return NotFound();
@@ -89,7 +93,7 @@ namespace MVCApplicationToDo.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Code,Title")] MilestoneChain milestoneChain)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Code,Title,Milestones")] MilestoneChain milestoneChain)
         {
             if (id != milestoneChain.Id)
             {
@@ -100,7 +104,37 @@ namespace MVCApplicationToDo.Controllers
             {
                 try
                 {
-                    _context.Update(milestoneChain);
+                    var existingMilestoneChain = await _context.MilestoneChains
+                        .Include(m => m.Milestones)
+                        .FirstOrDefaultAsync(m => m.Id == id);
+
+                    if (existingMilestoneChain == null)
+                    {
+                        return NotFound();
+                    }
+
+                    // Atualize as propriedades da MilestoneChain
+                    existingMilestoneChain.Code = milestoneChain.Code;
+                    existingMilestoneChain.Title = milestoneChain.Title;
+
+                    // Atualize os Milestones
+                    foreach (var milestone in milestoneChain.Milestones)
+                    {
+                        var existingMilestone = existingMilestoneChain.Milestones
+                            .FirstOrDefault(m => m.Id == milestone.Id);
+
+                        if (existingMilestone != null)
+                        {
+                            existingMilestone.Code = milestone.Code;
+                            existingMilestone.Title = milestone.Title;
+                            existingMilestone.Value = milestone.Value;
+                        }
+                        else
+                        {
+                            existingMilestoneChain.Milestones.Add(milestone);
+                        }
+                    }
+
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
@@ -118,6 +152,7 @@ namespace MVCApplicationToDo.Controllers
             }
             return View(milestoneChain);
         }
+
 
         // GET: MilestoneChains/Delete/5
         public async Task<IActionResult> Delete(int? id)

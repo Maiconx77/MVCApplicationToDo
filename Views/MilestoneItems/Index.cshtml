@@ -1,25 +1,36 @@
-﻿@model IEnumerable<MVCApplicationToDo.Models.MilestoneItem>
+﻿@model List<MVCApplicationToDo.Models.MilestoneItem>
 
 @{
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<h1>Milestones Index</h1>
+<br />
+<form asp-action="Index" method="get">
+    <div class="form-group" style="width: 30%;">
+        <label for="projectSelect">Project</label>
+        <select id="projectSelect" name="projectId" class="form-control" asp-items="ViewBag.ProjectId" onchange="this.form.submit()">
+            <option value="">Select a project</option>
+        </select>
+    </div>
+</form>
+<br />
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create">Create New</a> |
+    <a asp-action="CreateMultiple">Create Multiples</a>
 </p>
 <table class="table">
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Code)
+                Code
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Title)
+                Title
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Project)
+                Project
             </th>
             <th></th>
         </tr>

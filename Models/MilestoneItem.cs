@@ -19,6 +19,7 @@ namespace MVCApplicationToDo.Models
         public string Title { get; set; } = string.Empty;
 
         public int ProjectId { get; set; } // Chave estrangeira para Projeto
+        public bool IsSelected { get; set; }
 
         [DisplayName("Projeto")]
         public Project? Project { get; set; } = null;

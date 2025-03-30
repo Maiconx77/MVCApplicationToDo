@@ -1,12 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Build.Evaluation;
+using Microsoft.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
 using MVCApplicationToDo.Data;
 using MVCApplicationToDo.Models;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace MVCApplicationToDo.Controllers
 {
@@ -20,10 +21,22 @@ namespace MVCApplicationToDo.Controllers
         }
 
         // GET: MilestoneItems
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int? projectId)
         {
-            var applicationDbContext = _context.MilestoneItems.Include(m => m.Project);
-            return View(await applicationDbContext.ToListAsync());
+            ViewBag.ProjectId = new SelectList(_context.Projects, "Id", "Title", projectId);
+
+            if (projectId == null)
+            {
+                return View(new List<MilestoneItem>());
+            }
+
+            var milestoneItems = await _context.MilestoneItems
+                .Where(m => m.ProjectId == projectId)
+            .ToListAsync();
+
+            ViewBag.SelectedProjectId = projectId;
+            return View(milestoneItems);
+
         }
 
         // GET: MilestoneItems/Details/5
@@ -34,42 +47,19 @@ namespace MVCApplicationToDo.Controllers
                 return NotFound();
             }
 
-            var milestoneItem = await _context.MilestoneItems
+            var milestoneItems = await _context.MilestoneItems
                 .Include(m => m.Project)
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (milestoneItem == null)
+
+            if (milestoneItems == null)
             {
                 return NotFound();
             }
 
-            return View(milestoneItem);
+            return View(milestoneItems);
         }
 
-        // GET: MilestoneItems/Create
-        public IActionResult Create()
-        {
-            ViewData["ProjectId"] = new SelectList(_context.Projects, "Id", "Title");
-            return View();
-        }
-
-        // POST: MilestoneItems/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Code,Title,ProjectId")] MilestoneItem milestoneItem)
-        {
-            if (ModelState.IsValid)
-            {
-                _context.Add(milestoneItem);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["ProjectId"] = new SelectList(_context.Projects, "Id", "Title", milestoneItem.ProjectId);
-            return View(milestoneItem);
-        }
-
-        // GET: MilestoneItems/Edit/5
+        // GET: Projects/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -77,18 +67,19 @@ namespace MVCApplicationToDo.Controllers
                 return NotFound();
             }
 
-            var milestoneItem = await _context.MilestoneItems.FindAsync(id);
-            if (milestoneItem == null)
+            var milestoneItems = await _context.MilestoneItems
+                .Include(m => m.Project)
+                .FirstOrDefaultAsync(m => m.Id == id);
+
+            if (milestoneItems == null)
             {
                 return NotFound();
             }
-            ViewData["ProjectId"] = new SelectList(_context.Projects, "Id", "Title", milestoneItem.ProjectId);
-            return View(milestoneItem);
+            ViewBag.ProjectId = new SelectList(_context.Projects, "Id", "Title");
+            return View(milestoneItems);
         }
 
-        // POST: MilestoneItems/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        // POST: Projects/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Code,Title,ProjectId")] MilestoneItem milestoneItem)
@@ -102,12 +93,13 @@ namespace MVCApplicationToDo.Controllers
             {
                 try
                 {
+                    // Atualiza o item no banco de dados
                     _context.Update(milestoneItem);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!MilestoneItemExists(milestoneItem.Id))
+                    if (!MilestoItemExist(milestoneItem.Id))
                     {
                         return NotFound();
                     }
@@ -118,11 +110,85 @@ namespace MVCApplicationToDo.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["ProjectId"] = new SelectList(_context.Projects, "Id", "Title", milestoneItem.ProjectId);
+
+            // Caso o ModelState não seja válido, recarrega o ViewBag para o dropdown
+            ViewBag.ProjectId = new SelectList(_context.Projects, "Id", "Name", milestoneItem.ProjectId);
             return View(milestoneItem);
         }
 
-        // GET: MilestoneItems/Delete/5
+        //GET: MilestoneItems/Create
+        public IActionResult Create()
+            { 
+            ViewBag.ProjectId = new SelectList(_context.Projects, "Id", "Title");
+            return View(); 
+            }
+
+        // POST: MilestoneItems/Create
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create([Bind("Id,Code,Title,ProjectId")] MilestoneItem milestoneItem)
+        {
+            if (ModelState.IsValid)
+            {
+                _context.Add(milestoneItem);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+            ViewBag.ProjectId = new SelectList(_context.Projects, "Id", "Title", milestoneItem.ProjectId);
+            return View(milestoneItem);
+        }
+
+
+        // GET: MilestoneItems/CreateMultiple
+        public async Task<IActionResult> CreateMultiple(int? projectId)
+        {
+            ViewBag.ProjectId = new SelectList(_context.Projects, "Id", "Title", projectId);
+
+            if (projectId == null)
+            {
+                return View(new List<MilestoneItem>());
+            }
+
+            var milestoneItems = await _context.MilestoneItems
+                .Where(m => m.ProjectId == projectId)
+                .ToListAsync();
+
+            ViewBag.SelectedProjectId = projectId;
+            return View(milestoneItems);
+        }
+
+        // POST: MilestoneItems/CreateMultiple
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateMultiple(int projectId, List<MilestoneItem> milestoneItems)
+        {
+            if (ModelState.IsValid)
+            {
+                foreach (var milestoneItem in milestoneItems)
+                {
+                    if (milestoneItem.Id == 0)
+                    {
+                        milestoneItem.ProjectId = projectId;
+                        _context.MilestoneItems.Add(milestoneItem);
+                    }
+                    else
+                    {
+                        milestoneItem.ProjectId = projectId;
+                        _context.MilestoneItems.Update(milestoneItem);
+                    }
+                }
+
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+
+            ViewBag.ProjectId = new SelectList(_context.Projects, "Id", "Title", projectId);
+            ViewBag.SelectedProjectId = projectId;
+            return View(milestoneItems);
+
+        }
+
+        // GET: Projects/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -141,24 +207,30 @@ namespace MVCApplicationToDo.Controllers
             return View(milestoneItem);
         }
 
-        // POST: MilestoneItems/Delete/5
+        // POST: Projects/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var milestoneItem = await _context.MilestoneItems.FindAsync(id);
+            var milestoneItem = await _context.MilestoneItems
+                .Include(m => m.Project)
+                .FirstOrDefaultAsync(m => m.Id == id);
+
+            var projectId = milestoneItem.ProjectId; 
+
             if (milestoneItem != null)
             {
                 _context.MilestoneItems.Remove(milestoneItem);
             }
 
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("Index", new { id = projectId });
         }
 
-        private bool MilestoneItemExists(int id)
+        private bool MilestoItemExist(int id)
         {
             return _context.MilestoneItems.Any(e => e.Id == id);
         }
     }
 }
+

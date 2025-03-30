@@ -17,8 +17,8 @@ namespace MVCApplicationToDo.Models
         public required string Title { get; set; }
 
         [DisplayName("Progresso")] // Título descritivo
-        [Column(TypeName = "decimal(18, 2)")]
-        public decimal Value { get; set; }
+        [Range(0, 100, ErrorMessage = "O valor deve estar entre 0 e 100.")]
+        public int Value { get; set; }
         public int Order { get; set; }
 
         // Chave estrangeira para MilestoneChain
