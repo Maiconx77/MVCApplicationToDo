@@ -4,7 +4,14 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<h1>Milestone Chains Index</h1>
+
+@if (ViewBag.SelectedProjectId != null && ViewBag.SelectedProjectTitle != null)
+{
+    <div class="container">
+        <p>Projeto Selecionado: @ViewBag.SelectedProjectTitle</p>
+    </div>
+}
 
 <p>
     <a asp-action="Create">Create New</a>
@@ -18,7 +25,7 @@
             <th>
                 @Html.DisplayNameFor(model => model.Title)
             </th>
-            <th></th>
+            <th>Ações</th>
         </tr>
     </thead>
     <tbody>

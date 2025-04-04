@@ -22,7 +22,17 @@ namespace MVCApplicationToDo.Controllers
         // GET: MilestoneChains
         public async Task<IActionResult> Index()
         {
-            return View(await _context.MilestoneChains.ToListAsync());
+            var selectedProjectId = HttpContext.Session.GetInt32("SelectedProjectId");
+            var selectedProjectTitle = HttpContext.Session.GetString("SelectedProjectTitle");
+
+            ViewBag.SelectedProjectId = selectedProjectId;
+            ViewBag.SelectedProjectTitle = selectedProjectTitle;
+
+            var milestoneChains = await _context.MilestoneChains
+                .Where(m => m.ProjectId == selectedProjectId)
+                .ToListAsync();
+
+            return View(milestoneChains);
         }
 
         // GET: MilestoneChains/Details/5
@@ -34,6 +44,8 @@ namespace MVCApplicationToDo.Controllers
             }
 
             var milestoneChain = await _context.MilestoneChains
+                .Include(m => m.Milestones)
+                .ThenInclude(m => m.MilestoneItem)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (milestoneChain == null)
             {
@@ -44,12 +56,44 @@ namespace MVCApplicationToDo.Controllers
         }
 
         // GET: MilestoneChains/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create(int? stepCount)
         {
-            var milestone = new Milestone() { Code = "M01", Title = "Milestone 01" };
-            var milestoneChain = new MilestoneChain() { Code = "MC01", Title = "Milestone Chain 01", Milestones = [milestone] };
-            ViewBag.MilestoneItems = new SelectList(_context.MilestoneItems, "Id", "Code");
+            var selectedProjectId = HttpContext.Session.GetInt32("SelectedProjectId");
+            var selectedProjectTitle = HttpContext.Session.GetString("SelectedProjectTitle");
+            ViewBag.SelectedProjectId = selectedProjectId;
+            ViewBag.SelectedProjectTitle = selectedProjectTitle;
+
+            if (selectedProjectId == null)
+            {
+                return RedirectToAction("Index", "Projects"); // Redirecionar caso não haja um projeto selecionado
+            }
+
+
+            var milestoneItems = await _context.MilestoneItems
+                .Where(m => m.ProjectId == selectedProjectId)
+                .ToListAsync();
+
+            ViewBag.MilestoneItems = new SelectList(milestoneItems, "Id", "Code");
+
+            // Se o stepCount não for passado, use um valor padrão (1)
+            int count = stepCount ?? 1;
+
+            // Gere os milestones dinamicamente
+            var milestoneChain = new MilestoneChain
+            {
+                Code = "MC01",
+                Title = "Nova Cadeia de Marcos",
+                Milestones = Enumerable.Range(1, count).Select(i => new Milestone
+                {
+                    Code = $"MS0{i}",
+                    Title = $"Milestone {i}",
+                    Value = 0,
+                    Order = i
+                }).ToList()
+            };
+
             return View(milestoneChain);
+
 
         }
 
@@ -58,14 +102,36 @@ namespace MVCApplicationToDo.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Code,Title")] MilestoneChain milestoneChain)
+        public async Task<IActionResult> Create([Bind("Id,Code,Title,Milestones")] MilestoneChain milestoneChain)
         {
+            var selectedProjectId = HttpContext.Session.GetInt32("SelectedProjectId");
+            ViewBag.SelectedProjectId = selectedProjectId;
+
+            if (selectedProjectId == null)
+            {
+                return RedirectToAction("Index", "Projects"); // Redirecionar caso não haja projeto selecionado
+            }
+
             if (ModelState.IsValid)
             {
-                _context.Add(milestoneChain);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                try
+                {
+                    milestoneChain.ProjectId = selectedProjectId.Value;
+                    _context.MilestoneChains.Add(milestoneChain);
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (DbUpdateException ex)
+                {
+                    ModelState.AddModelError("", $"Erro ao salvar os dados: {ex.Message}");
+                }
             }
+
+            var milestoneItems = await _context.MilestoneItems
+                .Where(m => m.ProjectId == selectedProjectId)
+                .ToListAsync();
+
+            ViewBag.MilestoneItems = new SelectList(milestoneItems, "Id", "Code");
             return View(milestoneChain);
         }
 

@@ -5,16 +5,14 @@
 }
 
 <h1>Create Multiple Milestone Items</h1>
-<br />
-<form asp-action="CreateMultiple" method="get">
-    <div class="form-group" style="width: 30%;">
-        <label for="projectSelect">Project</label>
-        <select id="projectSelect" name="projectId" class="form-control" asp-items="ViewBag.ProjectId" onchange="this.form.submit()">
-            <option value="">Select a project</option>
-        </select>
+
+@if (ViewBag.SelectedProjectId != null && ViewBag.SelectedProjectTitle != null)
+{
+    <div class="container">
+        <p>Projeto Selecionado: @ViewBag.SelectedProjectTitle</p>
     </div>
-</form>
-<br />
+}
+
 <form asp-action="CreateMultiple" method="post">
     <input type="hidden" name="projectId" value="@ViewBag.SelectedProjectId" />
     <table class="table">

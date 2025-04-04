@@ -17,11 +17,8 @@ namespace MVCApplicationToDo.Models
         [DisplayName("Título")] // Acrônimo do milestone
         [StringLength(80)] // Limite máximo de 10 caracteres
         public string Title { get; set; } = string.Empty;
-
-        public int ProjectId { get; set; } // Chave estrangeira para Projeto
         public bool IsSelected { get; set; }
-
-        [DisplayName("Projeto")]
+        public int ProjectId { get; set; } 
         public Project? Project { get; set; } = null;
     }
 }

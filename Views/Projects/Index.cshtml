@@ -4,17 +4,14 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<h1>Projects Index</h1>
 
 @if (ViewBag.SelectedProjectId != null && ViewBag.SelectedProjectTitle != null)
 {
-    <div style="margin-bottom: 15px; color: green;">
-        <p>Projeto Selecionado: @ViewBag.SelectedProjectId</p>
-        <p>Título: @ViewBag.SelectedProjectTitle</p>
+    <div class="container">
+        <p>Projeto Selecionado: @ViewBag.SelectedProjectTitle</p>
     </div>
 }
-
-
 
 <p>
     <a asp-action="Create">Create New</a>
@@ -34,7 +31,7 @@
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
+    @foreach (var item in Model) {
         <tr>
             <td>
                 @Html.DisplayFor(modelItem => item.Code)
@@ -49,6 +46,6 @@
                 <a asp-action="Select" asp-route-id="@item.Id">Select</a>
             </td>
         </tr>
-}
+    }
     </tbody>
 </table>

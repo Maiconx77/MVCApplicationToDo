@@ -49,6 +49,18 @@ namespace MVCApplicationToDo.Controllers
         // GET: TaskItems/Create
         public IActionResult Create()
         {
+
+            var selectedProjectId = HttpContext.Session.GetInt32("SelectedProjectId");
+            var selectedProjectTitle = HttpContext.Session.GetString("SelectedProjectTitle");
+
+            ViewBag.SelectedProjectId = selectedProjectId;
+            ViewBag.SelectedProjectTitle = selectedProjectTitle;
+
+            if (selectedProjectId == null)
+            {
+                return RedirectToAction("Index", "Projects"); // Redirecionar caso não haja um projeto selecionado
+            }
+
             ViewData["MilestoneChainId"] = new SelectList(_context.MilestoneChains, "Id", "Title");
             ViewData["ProjectId"] = new SelectList(_context.Projects, "Id", "Title");
             return View();

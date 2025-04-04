@@ -21,22 +21,24 @@ namespace MVCApplicationToDo.Controllers
         }
 
         // GET: MilestoneItems
-        public async Task<IActionResult> Index(int? projectId)
+        public async Task<IActionResult> Index()
         {
-            ViewBag.ProjectId = new SelectList(_context.Projects, "Id", "Title", projectId);
+            var selectedProjectId = HttpContext.Session.GetInt32("SelectedProjectId");
+            var selectedProjectTitle = HttpContext.Session.GetString("SelectedProjectTitle");
 
-            if (projectId == null)
+            ViewBag.SelectedProjectId = selectedProjectId;
+            ViewBag.SelectedProjectTitle = selectedProjectTitle;
+
+            if (selectedProjectId == null)
             {
                 return View(new List<MilestoneItem>());
             }
 
             var milestoneItems = await _context.MilestoneItems
-                .Where(m => m.ProjectId == projectId)
-            .ToListAsync();
+                .Where(m => m.ProjectId == selectedProjectId)
+                .ToListAsync();
 
-            ViewBag.SelectedProjectId = projectId;
             return View(milestoneItems);
-
         }
 
         // GET: MilestoneItems/Details/5
@@ -118,7 +120,18 @@ namespace MVCApplicationToDo.Controllers
 
         //GET: MilestoneItems/Create
         public IActionResult Create()
-            { 
+            {
+            var selectedProjectId = HttpContext.Session.GetInt32("SelectedProjectId");
+            var selectedProjectTitle = HttpContext.Session.GetString("SelectedProjectTitle");
+
+            ViewBag.SelectedProjectId = selectedProjectId;
+            ViewBag.SelectedProjectTitle = selectedProjectTitle;
+
+            if (selectedProjectId == null)
+            {
+                return RedirectToAction("Index", "Projects"); // Redirecionar caso não haja um projeto selecionado
+            }
+
             ViewBag.ProjectId = new SelectList(_context.Projects, "Id", "Title");
             return View(); 
             }
@@ -138,22 +151,24 @@ namespace MVCApplicationToDo.Controllers
             return View(milestoneItem);
         }
 
-
         // GET: MilestoneItems/CreateMultiple
-        public async Task<IActionResult> CreateMultiple(int? projectId)
+        public async Task<IActionResult> CreateMultiple()
         {
-            ViewBag.ProjectId = new SelectList(_context.Projects, "Id", "Title", projectId);
+            var selectedProjectId = HttpContext.Session.GetInt32("SelectedProjectId");
+            var selectedProjectTitle = HttpContext.Session.GetString("SelectedProjectTitle");
 
-            if (projectId == null)
+            ViewBag.SelectedProjectId = selectedProjectId;
+            ViewBag.SelectedProjectTitle = selectedProjectTitle;
+
+            if (selectedProjectId == null)
             {
-                return View(new List<MilestoneItem>());
+                return RedirectToAction("Index", "Projects"); // Redirecionar caso não haja um projeto selecionado
             }
 
             var milestoneItems = await _context.MilestoneItems
-                .Where(m => m.ProjectId == projectId)
+                .Where(m => m.ProjectId == selectedProjectId)
                 .ToListAsync();
 
-            ViewBag.SelectedProjectId = projectId;
             return View(milestoneItems);
         }
 

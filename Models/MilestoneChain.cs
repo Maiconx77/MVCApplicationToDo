@@ -15,8 +15,9 @@ namespace MVCApplicationToDo.Models
         [DisplayName("Descrição")]
         [StringLength(255)]
         public required string Title { get; set; }
-
-        public List<Milestone>? Milestones { get; set; } = null;
+        public int ProjectId { get; set; }
+        public Project? Project { get; set; } = null;
+        public List<Milestone>? Milestones { get; set; } = new List<Milestone>();
         public ICollection<TaskItem>? TaskItems { get; set; }
     }
 }

@@ -9,6 +9,7 @@
 <div>
     <h4>MilestoneChain</h4>
     <hr />
+    <br />
     <dl class="row">
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.Code)
@@ -23,6 +24,33 @@
             @Html.DisplayFor(model => model.Title)
         </dd>
     </dl>
+    <br />
+    <h3>Steps</h3>
+    <table class="table col-md-2">
+        <thead>
+            <tr>
+                <th class="col-md-1">Code</th>
+                <th class="col-md-1">Title</th>
+                <th class="col-md-1">Progresso</th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (int i = 0; i < Model.Milestones.Count; i++)
+            {
+                <tr>
+                    <td class="col-md-3">
+                        @Html.DisplayFor(model => model.Milestones[i].MilestoneItem.Code)
+                    </td>
+                    <td class="col-md-3">
+                        @Html.DisplayFor(model => model.Milestones[i].MilestoneItem.Title)
+                    </td>
+                    <td class="col-md-3">
+                        @Html.DisplayFor(model => model.Milestones[i].Value)
+                    </td>
+                </tr>
+            }
+        </tbody>
+        </table>
 </div>
 <div>
     <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |

@@ -4,6 +4,7 @@ using MVCApplicationToDo.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MVCApplicationToDo.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250402041633_AdjustDb")]
+    partial class AdjustDb
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -32,12 +35,10 @@ namespace MVCApplicationToDo.Migrations
 
                     b.Property<string>("Code")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
 
                     b.Property<int>("MilestoneChainId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("MilestoneItemId")
                         .HasColumnType("int");
 
                     b.Property<int>("Order")
@@ -45,7 +46,8 @@ namespace MVCApplicationToDo.Migrations
 
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<int>("Value")
                         .HasColumnType("int");
@@ -53,8 +55,6 @@ namespace MVCApplicationToDo.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("MilestoneChainId");
-
-                    b.HasIndex("MilestoneItemId");
 
                     b.ToTable("Milestones");
                 });
@@ -228,15 +228,7 @@ namespace MVCApplicationToDo.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("MVCApplicationToDo.Models.MilestoneItem", "MilestoneItem")
-                        .WithMany()
-                        .HasForeignKey("MilestoneItemId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("MilestoneChain");
-
-                    b.Navigation("MilestoneItem");
                 });
 
             modelBuilder.Entity("MVCApplicationToDo.Models.MilestoneChain", b =>

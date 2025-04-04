@@ -7,67 +7,83 @@
 <h1>Create</h1>
 
 <h4>Milestone Chain</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create" method="post">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Code" class="control-label"></label>
-                <input asp-for="Code" class="form-control" />
-                <span asp-validation-for="Code" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Title" class="control-label"></label>
-                <input asp-for="Title" class="form-control" />
-                <span asp-validation-for="Title" class="text-danger"></span>
-            </div>
-            <br />
-            <h4>Steps</h4>
-            <table class="table col-md-12">
-                <thead>
-                    <tr>
-                        <th class="col-md-1 text-center">Step</th>
-                        <th class="col-md-6 text-center">Título</th>
-                        <th class="col-md-1 text-center">Progresso</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @for (int i = 0; i < Model.Milestones.Count; i++)
-                    {
-                        <tr>
-                            <td class="col-md-3">
-                                <div class="form-group">
-                                    <input type="text" name="Milestones[@i].Code" value="@Model.Milestones[i].Code" class="form-control" />
-                                </div>
-                            </td>
-                            <td class="col-md-6">
-                                <div class="form-group">
-                                    <input type="text" name="Milestones[@i].Title" value="@Model.Milestones[i].Title" class="form-control" />
-                                </div>
-                            </td>
-                            <td class="col-md-3">
-                                <div class="form-group">
-                                    <input type="number" name="Milestones[@i].Value" value="@Model.Milestones[i].Value" class="form-control" />
-                                </div>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
 
-            <!-- Botão para adicionar milestones -->
-            <button type="button" id="add-milestone" class="btn btn-primary">Adicionar Milestone</button>
-            <br /><br />
-
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+@if (ViewBag.SelectedProjectId != null && ViewBag.SelectedProjectTitle != null)
+{
+    <div class="container">
+        <p>Projeto Selecionado: @ViewBag.SelectedProjectTitle</p>
     </div>
-</div>
+}
+<form asp-action="Create" method="get">
+    <div class="form-group col-3">
+        <table>
+            <tr>
+                <td>
+                    <input type="number" id="stepsInput" name="stepCount" class="form-control" placeholder="Número de steps" min="1" required />
+                </td>
+                <td>
+                    <button type="submit" class="btn btn-primary">Adicionar</button>
+                </td>
+            </tr>
+        </table>
+    </div>
+</form>
 
+<hr />
+<form asp-action="Create" method="post" class="row">
+    <h5>Detalhes</h5>
+    <div class="col-3 mb-3">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="form-group mb-1">
+            <label asp-for="Code" class="control-label"></label>
+            <input asp-for="Code" class="form-control"/>
+            <span asp-validation-for="Code" class="text-danger"></span>
+        </div>
+        <div class="form-group mb-2">
+            <label asp-for="Title" class="control-label"></label>
+            <input asp-for="Title" class="form-control"/>
+            <span asp-validation-for="Title" class="text-danger"></span>
+        </div>
+    </div>
+    <h5>Milestones Chain</h5>
 
+    <div class="col-3">
+        <table class="table col-md-2">
+            <thead>
+                <tr>
+                    <th class="col-md-1 text-center">Step</th>
+                    <th class="col-md-1 text-center">Progresso</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < Model.Milestones.Count; i++)
+                {
+                    <tr>
+                        <td class="col-md-2">
+                            <div class="form-group">
+                                <input type="hidden" name="Milestones[@i].Id" value="@Model.Milestones[i].Id" />
+                                <input type="hidden" name="Milestones[@i].Order" value="@i" />
+                                <select asp-for="Milestones[@i].MilestoneItemId" class="form-control small-select" asp-items="ViewBag.MilestoneItems">
+                                    <option value="">Select</option>
+                                </select>
+                            </div>
+                        </td>
+                        <td class="col-md-1">
+                            <div class="form-group">
+                                <input type="number" name="Milestones[@i].Value" value="@Model.Milestones[i].Value" class="form-control" />
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <div class="form-group">
+        <input type="submit" value="Create" class="btn btn-primary" />
+    </div>
+</form>
+<br />
 <div>
     <a asp-action="Index">Back to List</a>
 </div>
@@ -76,34 +92,4 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
-
-        <<script>
-             $(document).ready(function () {
-                 let milestoneIndex = @Model.Milestones.Count;
-
-                 $("#add-milestone").click(function () {
-                     let newRow = `
-                         <tr>
-                             <td class="col-md-1">
-                                 <div class="form-group">
-                                     <input type="text" name="Milestones[${milestoneIndex}].Code" class="form-control" />
-                                 </div>
-                             </td>
-                             <td class="col-md-6">
-                                 <div class="form-group">
-                                     <input type="text" name="Milestones[${milestoneIndex}].Title" class="form-control" />
-                                 </div>
-                             </td>
-                             <td class="col-md-1">
-                                 <div class="form-group">
-                                     <input type="number" name="Milestones[${milestoneIndex}].Value" class="form-control" />
-                                 </div>
-                             </td>
-                         </tr>`;
-                     $(".table tbody").append(newRow); // Adiciona a nova linha
-                     milestoneIndex++; // Incrementa o índice
-                 });
-             });
-    </script>
-
 }
