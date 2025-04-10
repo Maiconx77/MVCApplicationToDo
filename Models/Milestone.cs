@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace MVCApplicationToDo.Models
 {
@@ -7,6 +8,7 @@ namespace MVCApplicationToDo.Models
         public int Id { get; set; }
         public string Code { get; set; } = string.Empty;
         public string Title { get; set; } = string.Empty;
+        [Range(0, 100)]
         public int Value { get; set; }
         public int Order { get; set; }
 

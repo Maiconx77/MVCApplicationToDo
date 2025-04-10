@@ -24,15 +24,13 @@
     <div class="form-group col-md-6">
         <br />
         <input type="submit" value="Save" class="btn btn-primary" />
-        
     </div>
     
-    <table class="table col-md-12">
+    <table class="table col-md-6">
         <thead>
             <tr>
                 <th class="col-md-1 text-center">Step</th>
-                <th class="col-md-6 text-center">Título</th>
-                <th class="col-md-1 text-center">Progresso</th>
+                <th class="col-md-6 text-center">Valor</th>
             </tr>
         </thead>
         <tbody>
@@ -41,19 +39,18 @@
                 for (int i = 0; i < Model.Milestones.Count; i++)
                 {
                     <tr>
-                        <td class="col-md-1">
+                        <td class="col-md-2">
                             <div class="form-group">
-                                @Html.EditorFor(model => Model.Milestones[i].Code, new { htmlAttributes = new { @class = "form-control" } })
+                                <input type="hidden" name="Milestones[@i].Id" value="@Model.Milestones[i].Id" />
+                                <input type="hidden" name="Milestones[@i].Order" value="@i" />
+                                <select asp-for="Milestones[@i].MilestoneItemId" class="form-control small-select" asp-items="ViewBag.MilestoneItems">
+                                    <option value="">Select</option>
+                                </select>
                             </div>
                         </td>
-                        <td class="col-md-6">
-                            <div class="form-group">
-                                @Html.EditorFor(model => Model.Milestones[i].Title, new { htmlAttributes = new { @class = "form-control" } })
-                            </div>
-                        </td>
                         <td class="col-md-1">
                             <div class="form-group">
-                                @Html.EditorFor(model => Model.Milestones[i].Value, new { htmlAttributes = new { @class = "form-control" } })
+                                <input type="number" name="Milestones[@i].Value" value="@Model.Milestones[i].Value" class="form-control" />
                             </div>
                         </td>
                     </tr>

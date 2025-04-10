@@ -30,21 +30,21 @@
 </form>
 
 <hr />
+<h5>Detalhes</h5>
+
 <form asp-action="Create" method="post" class="row">
-    <h5>Detalhes</h5>
-    <div class="col-3 mb-3">
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-        <div class="form-group mb-1">
+        <div class="form-group col-md-2">
             <label asp-for="Code" class="control-label"></label>
             <input asp-for="Code" class="form-control"/>
             <span asp-validation-for="Code" class="text-danger"></span>
         </div>
-        <div class="form-group mb-2">
+    <div class="form-group col-md-6" style="margin-bottom: 30px;">
             <label asp-for="Title" class="control-label"></label>
             <input asp-for="Title" class="form-control"/>
             <span asp-validation-for="Title" class="text-danger"></span>
         </div>
-    </div>
+        <br />
     <h5>Milestones Chain</h5>
 
     <div class="col-3">
@@ -71,6 +71,7 @@
                         <td class="col-md-1">
                             <div class="form-group">
                                 <input type="number" name="Milestones[@i].Value" value="@Model.Milestones[i].Value" class="form-control" />
+                                <span asp-validation-for="Milestones[@i].Value" class="text-danger"></span>
                             </div>
                         </td>
                     </tr>

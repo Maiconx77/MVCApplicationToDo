@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
 using MVCApplicationToDo.Data;
 using MVCApplicationToDo.Models;
@@ -22,6 +23,12 @@ namespace MVCApplicationToDo.Controllers
         // GET: TaskItems
         public async Task<IActionResult> Index()
         {
+            var selectedProjectId = HttpContext.Session.GetInt32("SelectedProjectId");
+            var selectedProjectTitle = HttpContext.Session.GetString("SelectedProjectTitle");
+
+            ViewBag.SelectedProjectId = selectedProjectId;
+            ViewBag.SelectedProjectTitle = selectedProjectTitle;
+
             var applicationDbContext = _context.TaskItems.Include(t => t.MilestoneChain).Include(t => t.Project);
             return View(await applicationDbContext.ToListAsync());
         }
@@ -58,12 +65,12 @@ namespace MVCApplicationToDo.Controllers
 
             if (selectedProjectId == null)
             {
-                return RedirectToAction("Index", "Projects"); // Redirecionar caso não haja um projeto selecionado
+                return RedirectToAction("Index", "Projects"); 
             }
 
-            ViewData["MilestoneChainId"] = new SelectList(_context.MilestoneChains, "Id", "Title");
-            ViewData["ProjectId"] = new SelectList(_context.Projects, "Id", "Title");
+            ViewData["MilestoneChainId"] = new SelectList(_context.MilestoneChains.Where(mc => mc.ProjectId == selectedProjectId.Value), "Id", "Title");
             return View();
+
         }
 
         // POST: TaskItems/Create
@@ -71,10 +78,13 @@ namespace MVCApplicationToDo.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Title,Weight,MilestoneChainId,ProjectId,IsCompleted")] TaskItem taskItem)
+        public async Task<IActionResult> Create([Bind("Id,Title,TaskNumber,Weight,MilestoneChainId,IsCompleted")] TaskItem taskItem)
         {
+            var selectedProjectId = HttpContext.Session.GetInt32("SelectedProjectId");
+
             if (ModelState.IsValid)
             {
+                taskItem.ProjectId = selectedProjectId ?? 0; 
                 _context.Add(taskItem);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));

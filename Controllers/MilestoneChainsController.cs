@@ -112,7 +112,15 @@ namespace MVCApplicationToDo.Controllers
                 return RedirectToAction("Index", "Projects"); // Redirecionar caso não haja projeto selecionado
             }
 
-            if (ModelState.IsValid)
+            var mscode = _context.MilestoneChains
+                .Where(m => m.Code == milestoneChain.Code)
+                .FirstOrDefault();
+            if (mscode != null)
+            {
+                ModelState.AddModelError("Code", "Já existe uma cadeia de marcos com esse código.");
+            }
+
+                if (ModelState.IsValid)
             {
                 try
                 {
@@ -146,6 +154,12 @@ namespace MVCApplicationToDo.Controllers
             var milestoneChain = await _context.MilestoneChains
                 .Include(m => m.Milestones)
                 .FirstOrDefaultAsync(m => m.Id == id);
+
+            var milestoneItems = await _context.MilestoneItems
+                .Where(m => m.ProjectId == milestoneChain.ProjectId)
+                .ToListAsync();
+
+            ViewBag.MilestoneItems = new SelectList(milestoneItems, "Id", "Code");
 
             if (milestoneChain == null)
             {
@@ -191,8 +205,7 @@ namespace MVCApplicationToDo.Controllers
 
                         if (existingMilestone != null)
                         {
-                            existingMilestone.Code = milestone.Code;
-                            existingMilestone.Title = milestone.Title;
+                            existingMilestone.MilestoneItemId = milestone.MilestoneItemId;
                             existingMilestone.Value = milestone.Value;
                         }
                         else

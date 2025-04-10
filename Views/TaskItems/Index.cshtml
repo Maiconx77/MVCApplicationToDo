@@ -1,16 +1,18 @@
 ﻿@model IEnumerable<MVCApplicationToDo.Models.TaskItem>
 
-@* @{
-    Layout = null;
-} *@
+@{
+    ViewData["Title"] = "Index";
+}
 
-<!DOCTYPE html>
+    <h1>Task Index</h1>
 
-<html>
-<head>
-    <meta name="viewport" content="width=device-width" />
-    <title>Index</title>
-</head>
+@if (ViewBag.SelectedProjectId != null && ViewBag.SelectedProjectTitle != null)
+{
+    <div class="container">
+        <p>Projeto Selecionado: @ViewBag.SelectedProjectTitle</p>
+    </div>
+}
+
 <body>
 <p>
     <a asp-action="Create">Create New</a>
@@ -22,16 +24,13 @@
                 @Html.DisplayNameFor(model => model.Title)
             </th>
             <th>
+                @Html.DisplayNameFor(model => model.TaskNumber)
+            </th>
+            <th>
                 @Html.DisplayNameFor(model => model.Weight)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.MilestoneChain)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Project)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.IsCompleted)
             </th>
             <th></th>
         </tr>
@@ -43,16 +42,13 @@
                 @Html.DisplayFor(modelItem => item.Title)
             </td>
             <td>
+                @Html.DisplayFor(modelItem => item.TaskNumber)
+            </td>
+            <td>
                 @Html.DisplayFor(modelItem => item.Weight)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.MilestoneChain.Id)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Project.Id)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.IsCompleted)
+                @Html.DisplayFor(modelItem => item.MilestoneChain.Code)
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |

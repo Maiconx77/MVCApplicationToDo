@@ -1,16 +1,17 @@
 ﻿@model MVCApplicationToDo.Models.TaskItem
 
 
-<!DOCTYPE html>
-
-<html>
 <head>
     <meta name="viewport" content="width=device-width" />
     <title>Create</title>
 </head>
-<body>
-
 <h4>TaskItem</h4>
+@if (ViewBag.SelectedProjectId != null && ViewBag.SelectedProjectTitle != null)
+{
+    <div class="container">
+        <p>Projeto Selecionado: @ViewBag.SelectedProjectTitle</p>
+    </div>
+}
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -22,17 +23,18 @@
                 <span asp-validation-for="Title" class="text-danger"></span>
             </div>
             <div class="form-group">
+                <label asp-for="TaskNumber" class="control-label"></label>
+                <input asp-for="TaskNumber" class="form-control" />
+                <span asp-validation-for="TaskNumber" class="text-danger"></span>
+            </div>
+            <div class="form-group">
                 <label asp-for="Weight" class="control-label"></label>
                 <input asp-for="Weight" class="form-control" />
                 <span asp-validation-for="Weight" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="MilestoneChainId" class="control-label"></label>
-                <select asp-for="MilestoneChainId" class ="form-control" asp-items="ViewBag.MilestoneChainId"></select>
-            </div>
-            <div class="form-group">
-                <label asp-for="ProjectId" class="control-label"></label>
-                <select asp-for="ProjectId" class ="form-control" asp-items="ViewBag.ProjectId"></select>
+                <select asp-for="MilestoneChainId" class="form-control" asp-items="ViewBag.MilestoneChainId"></select>
             </div>
             <br>
             <div class="form-group form-check">
@@ -53,7 +55,7 @@
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-}
-</body>
-</html>
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    }
